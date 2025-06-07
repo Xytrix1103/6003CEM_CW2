@@ -1,10 +1,15 @@
+import {Outlet} from "react-router-dom";
+
 function App() {
     return (
         <div className="App">
-            <h1>Welcome to React</h1>
-            <p>To get started, edit <code>src/App.tsx</code> and save to reload.</p>
+            {/*<Navbar/>*/}
+            <main>
+                <h1 className="text-2xl font-bold text-center my-4">Welcome to My App</h1>
+                <Outlet/>
+            </main>
         </div>
-    )
+    );
 }
 
-export default App
+export default App;
