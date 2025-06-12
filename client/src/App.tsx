@@ -1,15 +1,8 @@
-import {Outlet} from "react-router-dom";
+import {RouterProvider} from 'react-router';
+import router from './router';
 
-function App() {
-    return (
-        <div className="App">
-            {/*<Navbar/>*/}
-            <main>
-                <h1 className="text-2xl font-bold text-center my-4">Welcome to My App</h1>
-                <Outlet/>
-            </main>
-        </div>
-    );
+export default function App() {
+	return (
+		<RouterProvider router={router}/>
+	);
 }
-
-export default App;
