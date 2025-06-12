@@ -2,6 +2,7 @@ import {type ReactNode, useEffect, useState} from 'react';
 import {auth} from '@/firebase';
 import {onAuthStateChanged, type User} from 'firebase/auth';
 import {AuthContext} from '@/components/contexts';
+import {redirect} from "react-router";
 
 export function AuthProvider({children}: { children: ReactNode }) {
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -11,6 +12,12 @@ export function AuthProvider({children}: { children: ReactNode }) {
 		const unsubscribeFirebase = onAuthStateChanged(auth, (user) => {
 			console.log('Auth state changed:', user);
 			setCurrentUser(user);
+
+			if (!user) {
+				console.log('No user signed in');
+				redirect('/login');
+			}
+
 			setLoading(false);
 		});
 
@@ -20,14 +27,12 @@ export function AuthProvider({children}: { children: ReactNode }) {
 	}, []);
 
 	const logout = async () => {
-		if (currentUser) {
-			await auth.signOut();
-		}
+		await auth.signOut();
 	};
 
 	return (
 		<AuthContext.Provider value={{currentUser, loading, logout}}>
-			{children}
+			{!loading && children}
 		</AuthContext.Provider>
 	);
 }

@@ -1,30 +1,40 @@
 import {createBrowserRouter, redirect} from "react-router";
 import {auth} from "@/firebase";
-import {Login, NotFound, Register} from "@/pages";
+import {Dashboard, Login, NotFound, Register} from "@/pages";
 import {MainLayout} from "@/layouts";
 import {Spinner} from "@/components/ui";
 
-const authLoader = async () => {
+const getAuthUser = async () => {
 	await auth.authStateReady();
 	return auth.currentUser;
+};
+
+const protectedLoader = async () => {
+	const user = await getAuthUser();
+	if (!user) {
+		return redirect('/login');
+	}
+	return null;
+};
+
+const publicLoader = async () => {
+	const user = await getAuthUser();
+	if (user) {
+		return redirect('/');
+	}
+	return null;
 };
 
 const router = createBrowserRouter([
 		{
 			path: '/login',
 			element: <Login/>,
-			loader: async () => {
-				const user = await authLoader();
-				return user ? redirect('/') : null;
-			}
+			loader: publicLoader
 		},
 		{
 			path: '/register',
 			element: <Register/>,
-			loader: async () => {
-				const user = await authLoader();
-				return user ? redirect('/') : null;
-			}
+			loader: publicLoader
 		},
 		{
 			element: <MainLayout/>,
@@ -33,18 +43,11 @@ const router = createBrowserRouter([
 					<Spinner size="xl" variant="primary" thickness="normal"/>
 				</div>
 			),
-			loader: async () => {
-				const user = await authLoader();
-				return user ? null : redirect('/login');
-			},
+			loader: protectedLoader, // Add this loader
 			children: [
 				{
 					index: true,
-					element: (
-						<div className="home">
-							<h1>Welcome to the Dashboard</h1>
-						</div>
-					)
+					element: <Dashboard/>,
 				}
 			]
 		},

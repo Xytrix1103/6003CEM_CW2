@@ -2,7 +2,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App';
 import {AuthProvider} from "@/components/providers";
 import {StrictMode} from "react";
-import {ThemeProvider} from "@/components/themes/theme-provider.tsx";
+import {ThemeProvider} from "@/components/themes/theme-provider";
 import "./styles/globals.css";
 
 createRoot(document.getElementById('root')!).render(

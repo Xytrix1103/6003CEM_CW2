@@ -39,7 +39,7 @@ const Login = () => {
 		try {
 			await signInWithEmailAndPassword(auth, email, password);
 			// Redirect to the intended page or home
-			navigate(from, {replace: true});
+			navigate(from, {replace: true}); // Fix: use navigate instead of redirect
 		} catch (error) {
 			setError(handleFirebaseError(error as AuthError));
 			setLoading(false);
