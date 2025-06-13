@@ -2,20 +2,23 @@ import {type ReactNode, useEffect, useState} from 'react';
 import {auth} from '@/firebase';
 import {onAuthStateChanged, type User} from 'firebase/auth';
 import {AuthContext} from '@/components/contexts';
-import {redirect} from "react-router";
+import {setAuthToken} from "@/api/axios";
 
 export function AuthProvider({children}: { children: ReactNode }) {
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		const unsubscribeFirebase = onAuthStateChanged(auth, (user) => {
+		const unsubscribeFirebase = onAuthStateChanged(auth, async (user) => {
 			console.log('Auth state changed:', user);
 			setCurrentUser(user);
 
-			if (!user) {
-				console.log('No user signed in');
-				redirect('/login');
+			// Update the auth token whenever the user changes
+			if (user) {
+				const token = await user.getIdToken();
+				setAuthToken(token);
+			} else {
+				setAuthToken(null);
 			}
 
 			setLoading(false);

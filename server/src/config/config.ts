@@ -9,6 +9,7 @@ interface Config {
     MONGODB_PASSWORD: string;
     MONGODB_CLUSTER: string;
     MONGODB_DB: string;
+    GOOGLE_APPLICATION_CREDENTIALS: string;
 }
 
 const config: Config = {
@@ -18,6 +19,7 @@ const config: Config = {
     MONGODB_PASSWORD: process.env.MONGODB_PASSWORD || 'admin',
     MONGODB_CLUSTER: process.env.MONGODB_CLUSTER || 'cluster0',
     MONGODB_DB: process.env.MONGODB_DB || 'mydatabase',
+    GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS || 'path/to/credentials.json',
 };
 
 export default config;

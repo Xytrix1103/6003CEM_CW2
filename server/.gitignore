@@ -34,3 +34,5 @@ Thumbs.db
 pids/
 *.pid
 *.pid.lock
+
+credentials.json
