@@ -8,24 +8,23 @@ export default ({ mode }: { mode: 'development' | 'production' }) => {
 	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
 	return defineConfig({
-		plugins: [
-			tailwindcss(), react(),
-		],
+		plugins: [tailwindcss(), react()],
 		resolve: {
 			alias: {
 				'@': path.resolve(__dirname, './src'),
 			},
 		},
-		server: {
+		// Only enable proxy in development
+		server: mode === 'development' ? {
 			proxy: {
-				// proxy requests to the API server
 				'/api': {
 					target: process.env.VITE_API_URL || 'http://localhost:4000',
 					rewrite: (path) => path.replace(/^\/api/, ''),
+					changeOrigin: true,
 				},
 			},
-			port: 5173, // default Vite port
-			strictPort: true, // fail if port is already in use
-		},
+			port: 5173,
+			strictPort: true,
+		} : undefined,
 	})
 }

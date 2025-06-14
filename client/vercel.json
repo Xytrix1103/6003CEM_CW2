@@ -2,8 +2,8 @@
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"rewrites": [
 		{
-			"source": "/api/:path*",
-			"destination": "https://six003cem-cw2-be.onrender.com/:path*"
+			"source": "/api/(.*)",
+			"destination": "https://six003cem-cw2-be.onrender.com/$1"
 		}
 	],
 	"cleanUrls": false

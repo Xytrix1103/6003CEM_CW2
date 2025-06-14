@@ -29,7 +29,7 @@ const apiCaller = (config: ApiCallerConfig) => {
 	})
 }
 
-const apiCallerInstance = apiCaller({ baseURL: `${window.location.origin}/api/` }) // Initial instance with default base URL
+const apiCallerInstance = apiCaller({ baseURL: `/api/` }) // Initial instance with default base URL
 
 
 // Helper to update the authorization header

@@ -11,10 +11,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-// Add CORS middleware (before routes)
+// Backend (app.ts)
+const allowedOrigins = [
+  'https://6003cem.vercel.app',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-	origin: '*', // Allow all origins, adjust as needed
-	credentials: true, // Allow credentials if needed
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
 
 app.get('/', (_req, res) => {
