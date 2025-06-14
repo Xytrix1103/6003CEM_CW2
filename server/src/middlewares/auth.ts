@@ -1,6 +1,6 @@
 // src/middlewares/auth.ts
-import admin from 'firebase-admin';
 import {NextFunction, Request, Response} from "express";
+import { auth } from '../services/firebase_auth';
 
 declare global {
     namespace Express {
@@ -24,7 +24,7 @@ const authenticate = async (req: Request, res: Response, next: NextFunction): Pr
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = await admin.auth().verifyIdToken(token);
+        const decoded = await auth.verifyIdToken(token);
         req.user = {
             uid: decoded.uid,
             email: decoded.email,
