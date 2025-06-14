@@ -7,8 +7,6 @@ import path from 'path'
 export default ({ mode }: { mode: 'development' | 'production' }) => {
 	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
-	const isProduction = mode === 'production'
-
 	return defineConfig({
 		plugins: [
 			tailwindcss(), react(),
@@ -18,18 +16,16 @@ export default ({ mode }: { mode: 'development' | 'production' }) => {
 				'@': path.resolve(__dirname, './src'),
 			},
 		},
-		server: isProduction ? undefined : {
-			cors: {
-				origin: process.env.VITE_API_URL || 'http://localhost:4000',
-			},
+		server: {
 			proxy: {
+				// proxy requests to the API server
 				'/api': {
 					target: process.env.VITE_API_URL || 'http://localhost:4000',
 					rewrite: (path) => path.replace(/^\/api/, ''),
 				},
 			},
-			port: 5173,
-			strictPort: true,
+			port: 5173, // default Vite port
+			strictPort: true, // fail if port is already in use
 		},
 	})
 }
