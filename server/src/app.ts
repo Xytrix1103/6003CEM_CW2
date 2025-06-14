@@ -12,7 +12,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Add CORS middleware (before routes)
-app.use(cors());
+app.use(cors({
+	origin: '*', // Allow all origins, adjust as needed
+	credentials: true, // Allow credentials if needed
+}));
 
 app.get('/', (_req, res) => {
 	res.status(200).json({message: 'Welcome to the API!'});
