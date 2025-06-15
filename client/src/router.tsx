@@ -1,61 +1,67 @@
-import {createBrowserRouter, redirect} from "react-router";
-import {auth} from "@/firebase";
-import {Dashboard, Login, NotFound, Register} from "@/pages";
-import {MainLayout} from "@/layouts";
-import {Spinner} from "@/components/ui";
+import { createBrowserRouter, redirect } from 'react-router'
+import { auth } from '@/firebase'
+import { Dashboard, Login, NotFound, Register } from '@/pages'
+import { MainLayout } from '@/layouts'
+import { Spinner } from '@/components/ui'
+import Discover, { discoverLoader } from '@/pages/Discover'
 
 const getAuthUser = async () => {
-	await auth.authStateReady();
-	return auth.currentUser;
-};
+	await auth.authStateReady()
+	return auth.currentUser
+}
 
 const protectedLoader = async () => {
-	const user = await getAuthUser();
+	const user = await getAuthUser()
 	if (!user) {
-		return redirect('/login');
+		return redirect('/login')
 	}
-	return null;
-};
+	return null
+}
 
 const publicLoader = async () => {
-	const user = await getAuthUser();
+	const user = await getAuthUser()
 	if (user) {
-		return redirect('/');
+		return redirect('/')
 	}
-	return null;
-};
+	return null
+}
 
 const router = createBrowserRouter([
 		{
 			path: '/login',
-			element: <Login/>,
-			loader: publicLoader
+			element: <Login />,
+			loader: publicLoader,
 		},
 		{
 			path: '/register',
-			element: <Register/>,
-			loader: publicLoader
+			element: <Register />,
+			loader: publicLoader,
 		},
 		{
-			element: <MainLayout/>,
+			element: <MainLayout />,
 			hydrateFallbackElement: (
 				<div className="flex justify-center items-center w-full h-full flex-1">
-					<Spinner size="xl" variant="primary" thickness="normal"/>
+					<Spinner size="xl" variant="primary" thickness="normal" />
 				</div>
 			),
 			loader: protectedLoader, // Add this loader
 			children: [
 				{
 					index: true,
-					element: <Dashboard/>,
-				}
-			]
+					element: <Dashboard />,
+				},
+				{
+					path: '/discover',
+					loader: discoverLoader,
+					element: <Discover />,
+				},
+			],
 		},
 		{
 			path: '*',
-			element: <NotFound/>,
-		}
-	]
-);
+			element: <NotFound />,
+		},
+	],
+)
 
-export default router;
+export default router

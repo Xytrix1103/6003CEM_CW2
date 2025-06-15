@@ -7,6 +7,8 @@ import path from 'path'
 export default ({ mode }: { mode: 'development' | 'production' }) => {
 	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
+	console.log(`Vite running in ${mode} mode`)
+
 	return defineConfig({
 		plugins: [tailwindcss(), react()],
 		resolve: {

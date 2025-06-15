@@ -1,9 +1,5 @@
 import axios, { AxiosError, type AxiosResponse } from 'axios'
 
-interface ApiResponse<T> {
-	data: T;
-}
-
 interface ApiCallerConfig {
 	baseURL: string;
 	headers?: Record<string, string>; // Optional headers
@@ -41,9 +37,26 @@ const setAuthToken = (token: string | null) => {
 	}
 }
 
+const post = async <T = never, D extends Record<string, unknown> = Record<string, unknown>>(
+	url: string,
+	data: D = {} as D,
+	headers?: Record<string, string>,
+): Promise<T> => {
+	return await apiCallerInstance.post(url, data, {
+		headers: { ...defaultHeaders, ...headers },
+	})
+		.then((response: AxiosResponse<T>) => {
+			return response.data
+		})
+		.catch((error: AxiosError) => {
+			handleApiError(error)
+			throw error
+		})
+}
+
 const get = async <T = never>(
 	url: string,
-	params: Record<string, never> = {},
+	params: Record<string, unknown> = {},
 	headers?: Record<string, string>,
 	responseType?:
 		| 'arraybuffer'
@@ -52,13 +65,13 @@ const get = async <T = never>(
 		| 'json'
 		| 'text'
 		| 'stream',
-): Promise<ApiResponse<T>> => {
+): Promise<T> => {
 	return await apiCallerInstance.get(url, {
 		params,
-		headers: { ...defaultHeaders, ...headers }, // Merge default headers with provided headers
+		headers: { ...defaultHeaders, ...headers },
 		responseType: responseType,
 	})
-		.then((response: AxiosResponse<ApiResponse<T>>) => {
+		.then((response: AxiosResponse<T>) => {
 			return response.data
 		})
 		.catch((error: AxiosError) => {
@@ -67,32 +80,15 @@ const get = async <T = never>(
 		})
 }
 
-const post = async <T = never>(
+const put = async <T = never, D extends Record<string, unknown> = Record<string, unknown>>(
 	url: string,
-	data: Record<string, never> = {},
+	data: D = {} as D,
 	headers?: Record<string, string>,
-): Promise<ApiResponse<T>> => {
-	return await apiCallerInstance.post(url, data, {
-		headers: { ...defaultHeaders, ...headers }, // Merge default headers with provided headers
-	})
-		.then((response: AxiosResponse<ApiResponse<T>>) => {
-			return response.data
-		})
-		.catch((error: AxiosError) => {
-			handleApiError(error)
-			throw error
-		})
-}
-
-const put = async <T = never>(
-	url: string,
-	data: Record<string, never> = {},
-	headers?: Record<string, string>,
-): Promise<ApiResponse<T>> => {
+): Promise<T> => {
 	return await apiCallerInstance.put(url, data, {
-		headers: { ...defaultHeaders, ...headers }, // Merge default headers with provided headers
+		headers: { ...defaultHeaders, ...headers },
 	})
-		.then((response: AxiosResponse<ApiResponse<T>>) => {
+		.then((response: AxiosResponse<T>) => {
 			return response.data
 		})
 		.catch((error: AxiosError) => {
@@ -101,16 +97,16 @@ const put = async <T = never>(
 		})
 }
 
-const del = async <T = never>(
+const del = async <T = never, D extends Record<string, unknown> = Record<string, unknown>>(
 	url: string,
-	data: Record<string, never> = {},
+	data: D = {} as D,
 	headers?: Record<string, string>,
-): Promise<ApiResponse<T>> => {
+): Promise<T> => {
 	return await apiCallerInstance.delete(url, {
 		data,
-		headers: { ...defaultHeaders, ...headers }, // Merge default headers with provided headers
+		headers: { ...defaultHeaders, ...headers },
 	})
-		.then((response: AxiosResponse<ApiResponse<T>>) => {
+		.then((response: AxiosResponse<T>) => {
 			return response.data
 		})
 		.catch((error: AxiosError) => {

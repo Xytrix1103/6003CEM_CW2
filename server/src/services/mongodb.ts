@@ -1,39 +1,50 @@
-// src/db/config.ts
-import mongoose, {ConnectOptions, mongo} from 'mongoose'
-import config from '../config/config'
+import mongoose from 'mongoose';
+import config from '../config/config';
 
 const {
-    MONGODB_USER,
-    MONGODB_PASSWORD,
-    MONGODB_CLUSTER,
-    MONGODB_DB,
-} = config
+	MONGODB_USER,
+	MONGODB_PASSWORD,
+	MONGODB_CLUSTER, // Verify single "T" in actual config
+	MONGODB_APP_NAME,
+	MONGODB_DB,
+} = config;
 
-const uri = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_CLUSTER}/${MONGODB_DB}?retryWrites=true&w=majority`
+// Encode password for special characters
+const encodedPassword = encodeURIComponent(MONGODB_PASSWORD);
 
-const options: ConnectOptions = {
-    serverApi: {
-        version: mongo.ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    },
-    socketTimeoutMS: 45000,
-    connectTimeoutMS: 30000,
-    maxPoolSize: 10,
+// Add authSource=admin and encode credentials
+const uri = `mongodb+srv://${MONGODB_USER}:${encodedPassword}@${MONGODB_CLUSTER}/${MONGODB_DB}?retryWrites=true&w=majority&authSource=admin&appName=${MONGODB_APP_NAME}`;
+
+const clientOptions: mongoose.ConnectOptions = {
+	serverApi: {
+		version: '1',
+		strict: true,
+		deprecationErrors: true,
+	},
+};
+
+async function connectDB() {
+	try {
+		console.log('Connecting to MongoDB...');
+		await mongoose.connect(uri, clientOptions);
+		console.log('Successfully connected to MongoDB!');
+	} catch (error) {
+		console.error('MongoDB connection error:', error);
+		process.exit(1); // Exit process on connection failure
+	}
 }
 
-mongoose.connection
-    .on('connected', () => console.log('MongoDB connected'))
-    .on('disconnected', () => console.log('MongoDB disconnected'))
-    .on('error', (err) => console.error('MongoDB error:', err))
+// Persistent connection handlers
+mongoose.connection.on('connected', () => {
+	console.log('Mongoose connected to DB');
+});
 
-export const connectDB = async (): Promise<void> => {
-    try {
-        await mongoose.connect(uri, options)
-        await mongoose.connection.db!.admin().ping()
-        console.log('MongoDB ping successful')
-    } catch (error) {
-        console.error('MongoDB connection error:', error)
-        process.exit(1)
-    }
-}
+mongoose.connection.on('error', (err) => {
+	console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+	console.log('Mongoose disconnected');
+});
+
+export default connectDB;

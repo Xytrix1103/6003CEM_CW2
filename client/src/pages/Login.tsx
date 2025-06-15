@@ -1,9 +1,7 @@
-// src/pages/Login.tsx
-import {type FormEvent, useState} from 'react';
-import {Link, useLocation, useNavigate} from 'react-router';
-import {type AuthError, signInWithEmailAndPassword} from 'firebase/auth';
-import {auth} from "@/firebase";
-import {AlertTriangle, Lock, Mail} from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router'
+import { type AuthError, signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase'
+import { AlertTriangle, Lock, Mail } from 'lucide-react'
 import {
 	Alert,
 	AlertDescription,
@@ -13,38 +11,55 @@ import {
 	CardHeader,
 	CardTitle,
 	Checkbox,
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
 	Input,
-	Label,
-	Spinner
-} from '@/components/ui';
-import {handleFirebaseError} from "@/components/utils";
+	Spinner,
+} from '@/components/ui'
+import { handleFirebaseError } from '@/components/utils'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useState } from 'react'
+
+// Define form schema
+const formSchema = z.object({
+	email: z.string().email({ message: 'Invalid email address' }),
+	password: z.string(),
+	rememberMe: z.boolean().optional(),
+})
 
 const Login = () => {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [rememberMe, setRememberMe] = useState(false);
-	const [error, setError] = useState('');
-	const [loading, setLoading] = useState(false);
-	const navigate = useNavigate(); // Add this
-	const location = useLocation(); // Add this
+	const [error, setError] = useState('')
+	const navigate = useNavigate()
+	const location = useLocation()
+	const from = location.state?.from?.pathname || '/'
 
-	// Get the redirect location or default to home
-	const from = location.state?.from?.pathname || '/';
+	// Initialize form
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			email: '',
+			password: '',
+			rememberMe: false,
+		},
+	})
 
-	const handleSubmit = async (e: FormEvent) => {
-		e.preventDefault();
-		setLoading(true);
-		setError('');
-
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		setError('')
 		try {
-			await signInWithEmailAndPassword(auth, email, password);
-			// Redirect to the intended page or home
-			navigate(from, {replace: true}); // Fix: use navigate instead of redirect
-		} catch (error) {
-			setError(handleFirebaseError(error as AuthError));
-			setLoading(false);
+			await signInWithEmailAndPassword(auth, values.email, values.password)
+			navigate(from, { replace: true })
+		} catch (err) {
+			setError(handleFirebaseError(err as AuthError))
 		}
-	};
+	}
+
+	const isLoading = form.formState.isSubmitting
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -52,7 +67,7 @@ const Login = () => {
 				<CardHeader className="text-center space-y-4">
 					<div className="mx-auto bg-primary/10 p-3 rounded-full">
 						<div className="bg-primary p-2 rounded-full">
-							<Lock className="h-8 w-8 text-white"/>
+							<Lock className="h-8 w-8 text-white" />
 						</div>
 					</div>
 					<CardTitle className="text-2xl">Sign in to your account</CardTitle>
@@ -63,83 +78,111 @@ const Login = () => {
 				<CardContent>
 					{error && (
 						<Alert variant="destructive" className="mb-6">
-							<AlertTriangle className="h-4 w-4"/>
+							<AlertTriangle className="h-4 w-4" />
 							<AlertDescription>{error}</AlertDescription>
 						</Alert>
 					)}
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div className="space-y-2">
-							<Label htmlFor="email">Email Address</Label>
-							<div className="relative">
-								<div
-									className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-									<Mail className="h-4 w-4"/>
-								</div>
-								<Input
-									id="email"
-									type="email"
-									autoComplete="email"
-									required
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-									placeholder="you@example.com"
-									className="pl-10"
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+							{/* Email Field */}
+							<FormField
+								control={form.control}
+								name="email"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Email Address</FormLabel>
+										<FormControl>
+											<div className="relative">
+												<div
+													className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+													<Mail className="h-4 w-4" />
+												</div>
+												<Input
+													placeholder="you@example.com"
+													autoComplete="email"
+													className="pl-10"
+													{...field}
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							{/* Password Field */}
+							<FormField
+								control={form.control}
+								name="password"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Password</FormLabel>
+										<FormControl>
+											<div className="relative">
+												<div
+													className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+													<Lock className="h-4 w-4" />
+												</div>
+												<Input
+													type="password"
+													placeholder="••••••••"
+													autoComplete="current-password"
+													className="pl-10"
+													{...field}
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<div className="flex items-center justify-between">
+								{/* Remember Me */}
+								<FormField
+									control={form.control}
+									name="rememberMe"
+									render={({ field }) => (
+										<FormItem className="flex items-center space-x-2">
+											<FormControl>
+												<Checkbox
+													checked={field.value}
+													onCheckedChange={field.onChange}
+												/>
+											</FormControl>
+											<FormLabel className="text-sm font-medium !mt-0">
+												Remember me
+											</FormLabel>
+										</FormItem>
+									)}
 								/>
+
+								<Link
+									to="/forgot-password"
+									className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+								>
+									Forgot password?
+								</Link>
 							</div>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="password">Password</Label>
-							<div className="relative">
-								<div
-									className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-									<Lock className="h-4 w-4"/>
-								</div>
-								<Input
-									id="password"
-									type="password"
-									autoComplete="current-password"
-									required
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-									placeholder="••••••••"
-									className="pl-10"
-								/>
-							</div>
-						</div>
-						<div className="flex items-center justify-between">
-							<div className="flex items-center space-x-2">
-								<Checkbox
-									id="remember-me"
-									checked={rememberMe}
-									onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-								/>
-								<Label htmlFor="remember-me" className="text-sm font-medium">
-									Remember me
-								</Label>
-							</div>
-							<Link
-								to="/forgot-password"
-								className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+
+							<Button
+								type="submit"
+								disabled={isLoading}
+								className="w-full mt-2"
+								variant="outline"
 							>
-								Forgot password?
-							</Link>
-						</div>
-						<Button
-							type="submit"
-							disabled={loading}
-							className="w-full mt-2"
-							variant="outline"
-						>
-							{loading ? (
-								<div className="flex items-center justify-center">
-									<Spinner className="mr-2 h-4 w-4"/>
-									Signing in...
-								</div>
-							) : (
-								'Sign in'
-							)}
-						</Button>
-					</form>
+								{isLoading ? (
+									<div className="flex items-center justify-center">
+										<Spinner className="mr-2 h-4 w-4" />
+										Signing in...
+									</div>
+								) : (
+									'Sign in'
+								)}
+							</Button>
+						</form>
+					</Form>
+
 					<div className="mt-6 text-center text-sm">
 						<div className="text-muted-foreground">Don't have an account?</div>
 						<Link
@@ -152,7 +195,7 @@ const Login = () => {
 				</CardContent>
 			</Card>
 		</div>
-	);
-};
+	)
+}
 
-export default Login;
+export default Login

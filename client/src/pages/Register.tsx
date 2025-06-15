@@ -1,10 +1,9 @@
 // src/pages/Register.tsx
-import {type FormEvent, useState} from 'react';
-import {Link, redirect,} from 'react-router';
-import {type AuthError, createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '@/firebase';
-import {AlertTriangle, Lock, Mail, User} from 'lucide-react';
-import {handleFirebaseError} from '@/components/utils';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { type AuthError, signInWithCustomToken } from 'firebase/auth'
+import { AlertTriangle, Lock, Mail, User } from 'lucide-react'
+import { handleFirebaseError } from '@/components/utils'
 import {
 	Alert,
 	AlertDescription,
@@ -13,40 +12,76 @@ import {
 	CardContent,
 	CardHeader,
 	CardTitle,
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
 	Input,
-	Label,
-	Spinner
-} from '@/components/ui';
+	Spinner,
+} from '@/components/ui'
+import { post } from '@/api'
+import { auth } from '@/firebase'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+
+// Define form schema with validation
+const formSchema = z.object({
+	name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+	email: z.string().email({ message: 'Invalid email address' }),
+	password: z.string()
+		.min(8, { message: 'Password must be at least 8 characters' })
+		.regex(/[a-zA-Z]/, { message: 'Password must contain at least one letter' })
+		.regex(/[0-9]/, { message: 'Password must contain at least one number' })
+		.regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least one symbol' }),
+	confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+	message: 'Passwords do not match',
+	path: ['confirmPassword'],
+})
 
 const Register = () => {
-	const [name, setName] = useState('');
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [confirmPassword, setConfirmPassword] = useState('');
-	const [error, setError] = useState('');
-	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState('')
+	const navigate = useNavigate()
 
-	const handleSubmit = async (e: FormEvent) => {
-		e.preventDefault();
-		setLoading(true);
-		setError('');
+	// Initialize form
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: '',
+			email: '',
+			password: '',
+			confirmPassword: '',
+		},
+	})
 
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		setError('')
 		try {
-			await createUserWithEmailAndPassword(auth, email, password);
-			redirect('/');
-		} catch (error) {
-			setError(handleFirebaseError(error as AuthError));
-			setLoading(false);
+			const data = await post<{ token: string }>('/auth/register', {
+				email: values.email,
+				password: values.password,
+				displayName: values.name,
+			})
+			console.log('Registration successful:', data)
+			await signInWithCustomToken(auth, data.token)
+			navigate('/', { replace: true })
+		} catch (err) {
+			setError(handleFirebaseError(err as AuthError))
 		}
-	};
+	}
+
+	const isLoading = form.formState.isSubmitting
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+		<div className="min-h-screen flex items-center justify-center bg-background p-4">
 			<Card className="w-full max-w-md shadow-lg">
 				<CardHeader className="text-center space-y-4">
 					<div className="mx-auto bg-primary/10 p-3 rounded-full">
 						<div className="bg-primary p-2 rounded-full">
-							<User className="h-8 w-8 text-white"/>
+							<User className="h-8 w-8 text-white" />
 						</div>
 					</div>
 					<CardTitle className="text-2xl">Create your account</CardTitle>
@@ -58,109 +93,137 @@ const Register = () => {
 				<CardContent>
 					{error && (
 						<Alert variant="destructive" className="mb-6">
-							<AlertTriangle className="h-4 w-4"/>
+							<AlertTriangle className="h-4 w-4" />
 							<AlertDescription>{error}</AlertDescription>
 						</Alert>
 					)}
 
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div className="space-y-2">
-							<Label htmlFor="name">Full Name</Label>
-							<div className="relative">
-								<div
-									className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-									<User className="h-4 w-4"/>
-								</div>
-								<Input
-									id="name"
-									type="text"
-									required
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									placeholder="John Doe"
-									className="pl-10"
-								/>
-							</div>
-						</div>
-
-						<div className="space-y-2">
-							<Label htmlFor="email">Email Address</Label>
-							<div className="relative">
-								<div
-									className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-									<Mail className="h-4 w-4"/>
-								</div>
-								<Input
-									id="email"
-									type="email"
-									autoComplete="email"
-									required
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-									placeholder="you@example.com"
-									className="pl-10"
-								/>
-							</div>
-						</div>
-
-						<div className="space-y-2">
-							<Label htmlFor="password">Password</Label>
-							<div className="relative">
-								<div
-									className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-									<Lock className="h-4 w-4"/>
-								</div>
-								<Input
-									id="password"
-									type="password"
-									required
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-									placeholder="••••••••"
-									className="pl-10"
-								/>
-							</div>
-							<p className="text-xs text-muted-foreground mt-1">
-								Use 8+ characters with a mix of letters, numbers & symbols
-							</p>
-						</div>
-
-						<div className="space-y-2">
-							<Label htmlFor="confirm-password">Confirm Password</Label>
-							<div className="relative">
-								<div
-									className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-									<Lock className="h-4 w-4"/>
-								</div>
-								<Input
-									id="confirm-password"
-									type="password"
-									required
-									value={confirmPassword}
-									onChange={(e) => setConfirmPassword(e.target.value)}
-									placeholder="••••••••"
-									className="pl-10"
-								/>
-							</div>
-						</div>
-
-						<div className="mt-4">
-							<Button
-								type="submit"
-								disabled={loading}
-								className="w-full"
-							>
-								{loading ? (
-									<div className="flex items-center justify-center">
-										<Spinner className="mr-2 h-4 w-4"/>
-										Creating account...
-									</div>
-								) : (
-									'Sign up'
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+							{/* Name Field */}
+							<FormField
+								control={form.control}
+								name="name"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Full Name</FormLabel>
+										<FormControl>
+											<div className="relative">
+												<div
+													className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+													<User className="h-4 w-4" />
+												</div>
+												<Input
+													placeholder="John Doe"
+													className="pl-10"
+													{...field}
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
 								)}
-							</Button>
-						</div>
-					</form>
+							/>
+
+							{/* Email Field */}
+							<FormField
+								control={form.control}
+								name="email"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Email Address</FormLabel>
+										<FormControl>
+											<div className="relative">
+												<div
+													className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+													<Mail className="h-4 w-4" />
+												</div>
+												<Input
+													placeholder="you@example.com"
+													autoComplete="email"
+													className="pl-10"
+													{...field}
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							{/* Password Field */}
+							<FormField
+								control={form.control}
+								name="password"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Password</FormLabel>
+										<FormControl>
+											<div className="relative">
+												<div
+													className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+													<Lock className="h-4 w-4" />
+												</div>
+												<Input
+													type="password"
+													placeholder="••••••••"
+													className="pl-10"
+													{...field}
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+										<p className="text-xs text-muted-foreground mt-1">
+											Use 8+ characters with a mix of letters, numbers & symbols
+										</p>
+									</FormItem>
+								)}
+							/>
+
+							{/* Confirm Password Field */}
+							<FormField
+								control={form.control}
+								name="confirmPassword"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Confirm Password</FormLabel>
+										<FormControl>
+											<div className="relative">
+												<div
+													className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+													<Lock className="h-4 w-4" />
+												</div>
+												<Input
+													type="password"
+													placeholder="••••••••"
+													className="pl-10"
+													{...field}
+												/>
+											</div>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<div className="mt-4">
+								<Button
+									type="submit"
+									disabled={isLoading}
+									className="w-full"
+								>
+									{isLoading ? (
+										<div className="flex items-center justify-center">
+											<Spinner className="mr-2 h-4 w-4" />
+											Creating account...
+										</div>
+									) : (
+										'Sign up'
+									)}
+								</Button>
+							</div>
+						</form>
+					</Form>
 
 					<div className="mt-6 text-center text-sm">
 						<div className="text-muted-foreground">
@@ -182,7 +245,7 @@ const Register = () => {
 				</CardContent>
 			</Card>
 		</div>
-	);
-};
+	)
+}
 
-export default Register;
+export default Register
