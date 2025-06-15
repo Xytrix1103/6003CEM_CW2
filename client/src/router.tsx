@@ -4,6 +4,8 @@ import { Dashboard, Login, NotFound, Register } from '@/pages'
 import { MainLayout } from '@/layouts'
 import { Spinner } from '@/components/ui'
 import Discover, { discoverLoader } from '@/pages/Discover'
+import { homeLoader } from '@/pages/Home'
+import ForgotPassword from '@/pages/ForgotPassword'
 
 const getAuthUser = async () => {
 	await auth.authStateReady()
@@ -38,16 +40,23 @@ const router = createBrowserRouter([
 			loader: publicLoader,
 		},
 		{
+			path: '/forgot',
+			element: <ForgotPassword />,
+			loader: publicLoader,
+		},
+		{
 			element: <MainLayout />,
 			hydrateFallbackElement: (
 				<div className="flex justify-center items-center w-full h-full flex-1">
 					<Spinner size="xl" variant="primary" thickness="normal" />
 				</div>
 			),
+			errorElement: <NotFound />,
 			loader: protectedLoader, // Add this loader
 			children: [
 				{
 					index: true,
+					loader: homeLoader,
 					element: <Dashboard />,
 				},
 				{

@@ -4,7 +4,7 @@ import {
 	discoverPopularMoviesController,
 	discoverTopRatedMoviesController,
 	discoverUpcomingMoviesController,
-} from '../controllers/discover';
+} from '../controllers/movie';
 
 const router = Router();
 

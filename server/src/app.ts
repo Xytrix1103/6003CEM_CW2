@@ -3,7 +3,7 @@ import cors from 'cors';
 import errorHandler from './middlewares/errorHandler';
 import testRoutes from './routes/test';
 import authRoutes from './routes/auth';
-import discoverRoutes from './routes/discover';
+import discoverRoutes from './routes/movie';
 import genreRoutes from './routes/genre';
 import axios from 'axios';
 import { requestLogger } from './middlewares/logger';
@@ -39,7 +39,7 @@ app.get('/', (_req, res) => {
 // Use routes
 app.use('/test', testRoutes);
 app.use('/auth', authRoutes);
-app.use('/discover', discoverRoutes);
+app.use('/movie', discoverRoutes);
 app.use('/genre', genreRoutes);
 
 // Global error handler (should be after routes)

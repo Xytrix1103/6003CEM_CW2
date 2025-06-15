@@ -29,12 +29,12 @@ const MainLayout = () => {
 
 	return (
 		<SidebarProvider defaultOpen={true} className="--sidebar-width: 250px">
-			<div className="min-h-screen flex flex-1 flex-col bg-background">
+			<div className="min-h-screen grid grid-cols-[auto_1fr] bg-background border-b">
 				<ScrollRestoration />
 
 				<div className="flex flex-1">
 					{/* Enhanced Sidebar - contains all navigation */}
-					<Sidebar variant="sidebar" className="bg-sidebar border-r">
+					<Sidebar variant="sidebar" className="bg-sidebar border-r w-[250px]">
 						<SidebarContent className="flex flex-1">
 							<SidebarHeader className="p-4 border-b">
 								<div className="flex items-center gap-3">
@@ -158,8 +158,8 @@ const MainLayout = () => {
 
 					{/* Main Content Area */}
 					<SidebarInset className="!m-0">
-						<main className="flex-1 bg-background p-6 md:p-8 lg:p-10 overflow-y-auto">
-							<div className="w-full">
+						<main className="bg-background p-6 md:p-8 lg:p-10 overflow-x-hidden">
+							<div className="max-w-full">
 								<Outlet />
 							</div>
 						</main>

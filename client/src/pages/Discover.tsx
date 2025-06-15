@@ -18,7 +18,7 @@ import { get } from '@/api'
 import type { DiscoverResponse } from '@/types/discover'
 import { auth } from '@/firebase'
 import type { Genre, GenreResponse } from '@/types/genre'
-import MovieCard from '@/components/custom/DiscoverMovieCard'
+import MovieCard from '@/components/custom/MovieCard'
 
 export async function discoverLoader({ request }: { request: Request }) {
 	const url = new URL(request.url)
@@ -28,7 +28,7 @@ export async function discoverLoader({ request }: { request: Request }) {
 
 	const genres = await get<GenreResponse>('/genre/movie/list')
 		.catch(() => ({ genres: [] }))
-	const discoverResponse = await get<DiscoverResponse>(`/discover/${category}`, {
+	const discoverResponse = await get<DiscoverResponse>(`/movie/${category}`, {
 		page,
 	})
 		.catch(() => ({ results: [], page: 1, total_pages: 0, total_results: 0 }))
