@@ -1,9 +1,9 @@
-import tmdb from '../services/tmdb';
+import { tmdbClient } from '../services/movie_api';
 import { Request, Response } from 'express';
 
 export const getMovieGenresController = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const genres = await tmdb.get(
+		const genres = await tmdbClient.get(
 			'/genre/movie/list',
 		);
 		res.status(200).json(genres.data);

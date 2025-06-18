@@ -6,6 +6,8 @@ import { Spinner } from '@/components/ui'
 import Discover, { discoverLoader } from '@/pages/Discover'
 import { homeLoader } from '@/pages/Home'
 import ForgotPassword from '@/pages/ForgotPassword'
+import { ErrorBoundary, ErrorFallback } from '@/components/custom/ErrorBoundary'
+import MoviePage, { movieLoader } from '@/pages/Movie'
 
 const getAuthUser = async () => {
 	await auth.authStateReady()
@@ -45,13 +47,17 @@ const router = createBrowserRouter([
 			loader: publicLoader,
 		},
 		{
-			element: <MainLayout />,
+			element: (
+				<ErrorBoundary> {/* Wrap layout in error boundary */}
+					<MainLayout />
+				</ErrorBoundary>
+			),
 			hydrateFallbackElement: (
 				<div className="flex justify-center items-center w-full h-full flex-1">
 					<Spinner size="xl" variant="primary" thickness="normal" />
 				</div>
 			),
-			errorElement: <NotFound />,
+			errorElement: <ErrorFallback />, // Use error fallback
 			loader: protectedLoader, // Add this loader
 			children: [
 				{
@@ -63,6 +69,15 @@ const router = createBrowserRouter([
 					path: '/discover',
 					loader: discoverLoader,
 					element: <Discover />,
+				},
+				{
+					path: '/movies',
+					element: <div>Movies Page</div>, // Placeholder for Movies page
+				},
+				{
+					path: '/movie/:id',
+					loader: movieLoader,
+					element: <MoviePage />,
 				},
 			],
 		},

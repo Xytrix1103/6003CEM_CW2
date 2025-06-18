@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import errorHandler from './middlewares/errorHandler';
-import testRoutes from './routes/test';
 import authRoutes from './routes/auth';
 import discoverRoutes from './routes/movie';
 import genreRoutes from './routes/genre';
@@ -37,7 +36,6 @@ app.get('/', (_req, res) => {
 });
 
 // Use routes
-app.use('/test', testRoutes);
 app.use('/auth', authRoutes);
 app.use('/movie', discoverRoutes);
 app.use('/genre', genreRoutes);

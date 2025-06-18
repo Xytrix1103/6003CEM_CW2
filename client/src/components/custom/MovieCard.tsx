@@ -1,6 +1,6 @@
 // src/components/MovieCard.tsx
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { Calendar, Languages, PlayCircle, Star } from 'lucide-react'
 import { tmdbImage } from '@/components/utils'
 import type { DiscoverResponseResult } from '@/types/discover'

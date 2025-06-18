@@ -1,11 +1,11 @@
-import tmdb from '../services/tmdb';
+import { omdbClient, tmdbClient } from '../services/movie_api';
 import { Request, Response } from 'express';
 
 
 export const discoverPopularMoviesController = async (req: Request, res: Response): Promise<void> => {
 	const { page = 1 } = req.query;
 	try {
-		const response = await tmdb.get('/movie/popular', {
+		const response = await tmdbClient.get('/movie/popular', {
 			params: {
 				page,
 			},
@@ -20,7 +20,7 @@ export const discoverPopularMoviesController = async (req: Request, res: Respons
 export const discoverTopRatedMoviesController = async (req: Request, res: Response): Promise<void> => {
 	const { page = 1 } = req.query;
 	try {
-		const response = await tmdb.get('/movie/top_rated', {
+		const response = await tmdbClient.get('/movie/top_rated', {
 			params: {
 				page,
 			},
@@ -35,7 +35,7 @@ export const discoverTopRatedMoviesController = async (req: Request, res: Respon
 export const discoverUpcomingMoviesController = async (req: Request, res: Response): Promise<void> => {
 	const { page = 1 } = req.query;
 	try {
-		const response = await tmdb.get('/movie/upcoming', {
+		const response = await tmdbClient.get('/movie/upcoming', {
 			params: {
 				page,
 			},
@@ -50,7 +50,7 @@ export const discoverUpcomingMoviesController = async (req: Request, res: Respon
 export const discoverNowPlayingMoviesController = async (req: Request, res: Response): Promise<void> => {
 	const { page = 1 } = req.query;
 	try {
-		const response = await tmdb.get('/movie/now_playing', {
+		const response = await tmdbClient.get('/movie/now_playing', {
 			params: {
 				page,
 			},
@@ -62,17 +62,22 @@ export const discoverNowPlayingMoviesController = async (req: Request, res: Resp
 	}
 };
 
-const appendBaseUrlToResult = (result: any, baseUrl: string): any => {
-	if (result && result.results) {
-		result.results = result.results.map((item: any) => {
-			if (item.poster_path) {
-				item.poster_path = `${baseUrl}${item.poster_path}`;
-			}
-			if (item.backdrop_path) {
-				item.backdrop_path = `${baseUrl}${item.backdrop_path}`;
-			}
-			return item;
+export const getMovieByIdController = async (req: Request, res: Response): Promise<void> => {
+	const { id } = req.params;
+	try {
+		const response = await tmdbClient.get(`/movie/${id}?append_to_response=videos,credits,reviews,images,external_ids,similar`);
+		const omdbResponse = await omdbClient.get('/', {
+			params: {
+				i: response.data.imdb_id,
+			},
 		});
+		console.log('OMDB Response:', omdbResponse.data);
+		res.status(200).json({
+			...response.data,
+			omdb: omdbResponse.data.imdbID ? omdbResponse.data : undefined,
+		});
+	} catch (error) {
+		console.error(`Error fetching movie with ID ${id}:`, error);
+		res.status(500).json({ error: `Failed to fetch movie with ID ${id}` });
 	}
-	return result;
 };

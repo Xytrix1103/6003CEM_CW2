@@ -1,5 +1,5 @@
 // src/pages/Home.tsx
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData } from 'react-router'
 import { useEffect, useState } from 'react'
 import { get } from '@/api'
 import type { DiscoverResponse, DiscoverResponseResult } from '@/types/discover'

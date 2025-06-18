@@ -1,3 +1,4 @@
+// src/components/error/ErrorBoundary.tsx
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { AlertTriangle } from 'lucide-react'
@@ -11,31 +12,27 @@ interface Props {
 interface State {
 	hasError: boolean
 	error: Error | null
-	errorInfo: ErrorInfo | null
 }
 
 class ErrorBoundary extends Component<Props, State> {
 	public state: State = {
 		hasError: false,
 		error: null,
-		errorInfo: null,
 	}
 
 	public static getDerivedStateFromError(error: Error): State {
 		return {
 			hasError: true,
 			error,
-			errorInfo: null,
 		}
 	}
 
 	public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
 		console.error('Uncaught error:', error, errorInfo)
-		this.setState({ error, errorInfo })
 	}
 
 	public resetError = () => {
-		this.setState({ hasError: false, error: null, errorInfo: null })
+		this.setState({ hasError: false, error: null })
 	}
 
 	public render() {
