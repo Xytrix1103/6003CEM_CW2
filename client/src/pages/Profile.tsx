@@ -436,7 +436,7 @@ export default function ProfilePage({ viewOnly = false }: { viewOnly?: boolean }
 
 					{/* Reviews Content */}
 					<TabsContent value="reviews" className="py-6">
-						<div className="flex-1">
+						<div className="flex-1 flex-col gap-4">
 							{getMoviesWithReviews().length === 0 ? (
 								<div className="text-center py-8">
 									<p className="text-muted-foreground">
