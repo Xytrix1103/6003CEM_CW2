@@ -1,0 +1,38 @@
+# Dependency directories
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Coverage reports
+coverage/
+nyc_output/
+
+# Environment variables
+.env
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Debug
+pids/
+*.pid
+*.pid.lock
+
+credentials.json
