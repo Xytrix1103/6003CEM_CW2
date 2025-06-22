@@ -82,7 +82,7 @@ const ReviewCard = ({ review, movie, onEdit, onDelete, viewOnly = false }: Revie
 	}
 
 	return (
-		<div className="border rounded-lg p-4 flex gap-4 bg-muted">
+		<div className="border rounded-lg p-4 flex gap-4 bg-muted mb-4"> {/* Added mb-4 */}
 			<AlertDialog open={showDeleteReviewDialog} onOpenChange={setShowDeleteReviewDialog}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
