@@ -82,7 +82,7 @@ const ReviewCard = ({ review, movie, onEdit, onDelete, viewOnly = false }: Revie
 	}
 
 	return (
-		<div className="border rounded-lg p-4 flex gap-4 bg-muted mb-4"> {/* Added mb-4 */}
+		<div className="border rounded-lg p-4 flex gap-4 bg-muted"> {/* Added mb-4 */}
 			<AlertDialog open={showDeleteReviewDialog} onOpenChange={setShowDeleteReviewDialog}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
@@ -436,7 +436,7 @@ export default function ProfilePage({ viewOnly = false }: { viewOnly?: boolean }
 
 					{/* Reviews Content */}
 					<TabsContent value="reviews" className="py-6">
-						<div className="flex-1 flex-col gap-4">
+						<div className="flex-1 flex flex-col gap-4">
 							{getMoviesWithReviews().length === 0 ? (
 								<div className="text-center py-8">
 									<p className="text-muted-foreground">
