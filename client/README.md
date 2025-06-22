@@ -1,54 +1,72 @@
-# React + TypeScript + Vite
+# Movie Explorer Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application for discovering, tracking, and reviewing movies. This frontend provides a seamless experience
+for browsing movie information, creating watchlists, marking favorites, and sharing reviews.
 
-Currently, two official plugins are available:
+Live Demo: https://6003cem.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **User Authentication**: Secure login, registration, and password reset
+- **Personal Profile**: Customizable user profiles with display names
+- **Movie Discovery**: Browse and search for movies
+- **Watchlist Management**: Add movies to your watchlist
+- **Favorites Collection**: Mark and organize favorite movies
+- **Reviews & Ratings**: Rate movies and write detailed reviews
+- **Responsive Design**: Optimized for all devices from mobile to desktop
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Technologies Used
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **React**: UI library for building the interface
+- **TypeScript**: Type-safe JavaScript for better development experience
+- **Vite**: Fast build tool and development server
+- **React Router**: For client-side routing
+- **Firebase**: Authentication and backend services
+- **shadcn/ui**: Reusable UI components
+- **Lucide Icons**: Beautiful SVG icons
+- **Zod**: Schema validation
+- **React Hook Form**: Form handling
+- **Axios**: HTTP client for API requests
+- **Sonner**: Toast notifications
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+## Project Structure
+
+```
+client/
+├── public/
+├── src/
+│   ├── api/               # API client configuration
+│   ├── components/        # Reusable components
+│   │   ├── contexts/      # React contexts
+│   │   ├── custom/        # Custom components
+│   │   ├── providers/     # Context providers
+│   │   ├── themes/        # Theme configuration
+│   │   └── ui/            # UI components (shadcn)
+│   ├── firebase/          # Firebase configuration
+│   ├── hooks/             # Custom React hooks
+│   ├── layouts/           # Page layouts
+│   ├── lib/               # Utility functions
+│   ├── pages/             # Page components
+│   ├── styles/            # Global styles
+│   ├── types/             # TypeScript type definitions
+│   ├── App.tsx            # Main App component
+│   ├── main.tsx           # Application entry point
+│   └── router.tsx         # Router configuration
+├── .eslintrc.js           # ESLint configuration
+├── package.json           # Project dependencies
+├── tsconfig.json          # TypeScript configuration
+└── vite.config.ts         # Vite configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Acknowledgements
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- [The Movie Database (TMDB)](https://www.themoviedb.org/) for the movie data API
+- [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
+- [Lucide Icons](https://lucide.dev/) for the icon set
