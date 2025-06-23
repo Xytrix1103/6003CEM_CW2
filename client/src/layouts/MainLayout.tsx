@@ -48,7 +48,7 @@ const MainLayout = () => {
 							<SidebarHeader className="p-4 border-b">
 								<div className="flex items-center gap-3">
 									<Clapperboard className="h-6 w-6 text-primary" />
-									<h1 className="text-lg font-semibold">MovieHub6003</h1>
+									<h1 className="text-lg font-semibold">MovieHub</h1>
 								</div>
 							</SidebarHeader>
 
