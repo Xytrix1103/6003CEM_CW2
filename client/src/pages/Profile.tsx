@@ -375,7 +375,7 @@ export default function ProfilePage({ viewOnly = false }: { viewOnly?: boolean }
 							}
 						</div>
 						<p className="text-muted-foreground">
-							{currentUser?.email}{' '}
+							{viewOnly ? loaderData.email : currentUser?.email}
 							{currentUserProfile?.createdAt &&
 								`(Member since ${new Date(currentUserProfile.createdAt).toLocaleDateString('en-US', {
 									year: 'numeric',
