@@ -4,7 +4,6 @@ import Watched, { IWatched } from '../models/Watched';
 import { tmdbClient } from '../services/movie_api';
 import { Types } from 'mongoose';
 import Visit, { IVisit } from '../models/Visit';
-import { auth } from '../services/firebase_auth';
 
 // Helper function to fetch movie details in batches
 const fetchMovieDetails = async (movieIds: number[]) => {
@@ -47,15 +46,6 @@ export const updateDisplayName = async (req: Request, res: Response) => {
 
 		if (!updatedUser) {
 			res.status(404).json({ message: 'User not found' });
-		}
-
-		// Update Firebase user display name
-		const firebaseUser = await auth.updateUser(uid, {
-			displayName: updatedUser.displayName,
-		});
-
-		if (!firebaseUser) {
-			res.status(500).json({ message: 'Failed to update Firebase user' });
 		}
 
 		res.status(200).json({
