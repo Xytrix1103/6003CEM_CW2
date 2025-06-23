@@ -1,5 +1,6 @@
 import { omdbClient, tmdbClient } from '../services/movie_api';
 import { Request, Response } from 'express';
+import Watched from '../models/Watched';
 
 
 export const discoverPopularMoviesController = async (req: Request, res: Response): Promise<void> => {
@@ -83,9 +84,34 @@ export const getMovieByIdController = async (req: Request, res: Response): Promi
 				i: response.data.imdb_id,
 			},
 		});
+
+		// Retrieve feedback from database
+		const watchedEntries = await Watched.find({
+			movieId: parseInt(id),
+		}).populate<{ user: { displayName: string } }>({
+			path: 'user',
+			select: 'displayName', // Only get user's display name
+		});
+
+		// Format feedback entries
+		const feedback = watchedEntries
+			.filter(entry =>
+				entry.feedback.rating !== null ||
+				entry.feedback.content !== null,
+			)
+			.map(entry => ({
+				user: entry.user.displayName,
+				rating: entry.feedback.rating,
+				review: entry.feedback.content,
+				createdAt: entry.feedback.createdAt,
+				updatedAt: entry.feedback.updatedAt,
+			}));
+
+		// Send response with all data
 		res.status(200).json({
 			...response.data,
 			omdb: omdbResponse.data.imdbID ? omdbResponse.data : undefined,
+			feedback, // Include formatted feedback
 			message: `Movie details fetched successfully`,
 		});
 	} catch (error) {

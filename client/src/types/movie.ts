@@ -65,6 +65,15 @@ export interface MovieDetailsResponse {
 		total_results: number;
 	};
 	omdb?: OMDB; // Optional OMDB data
+	feedback: MovieDetailsResponseFeedback[]; // User feedback
+}
+
+export type MovieDetailsResponseFeedback = {
+	user: string;
+	rating: number | null;
+	review: string | null;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 export type OmdbRating = {

@@ -111,6 +111,7 @@ export async function movieLoader({ params }: { params: Params }) {
 			total_pages: 0,
 			total_results: 0,
 		},
+		feedback: [],
 	}
 
 	if (!id || isNaN(Number(id))) {

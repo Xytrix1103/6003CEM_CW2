@@ -511,7 +511,8 @@ export default function MoviePage() {
 						<TabsTrigger value="overview">Overview</TabsTrigger>
 						<TabsTrigger value="cast">Cast & Crew</TabsTrigger>
 						<TabsTrigger value="media">Media</TabsTrigger>
-						<TabsTrigger value="reviews">Reviews</TabsTrigger>
+						<TabsTrigger value="reviews">TMDB Reviews</TabsTrigger>
+						<TabsTrigger value="reviews_local">MovieHub Reviews</TabsTrigger>
 					</TabsList>
 
 					{/* Overview Tab - Restructured as single column */}
@@ -898,6 +899,53 @@ export default function MoviePage() {
 										<Button variant="link" className="p-0 mt-2">
 											Read full review
 										</Button>
+									</div>
+								))
+							) : (
+								<div className="text-center py-12">
+									<h3 className="text-xl font-semibold mb-2">No Reviews Yet</h3>
+									<p className="text-muted-foreground">
+										Be the first to review this movie
+									</p>
+								</div>
+							)}
+						</div>
+					</TabsContent>
+
+					<TabsContent value="reviews_local">
+						<div className="space-y-6">
+							{loaderData.feedback.length > 0 ? (
+								loaderData.feedback.map((fb, index) => (
+									<div key={index} className="bg-muted rounded-lg p-6">
+										<div className="flex items-center gap-4 mb-4">
+											<div
+												className="w-12 h-12 rounded-full bg-primary-foreground flex items-center justify-center">
+												{fb.user.charAt(0)}
+											</div>
+											<div>
+												<h3 className="font-bold">{fb.user}</h3>
+												<div className="flex items-center gap-2">
+													{fb.rating && (
+														<>
+															<Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+															<div>{fb.rating.toFixed(1)}</div>
+															<div>•</div>
+														</>
+													)}
+													<div className="text-sm text-muted-foreground">
+														{new Date(fb.createdAt).toLocaleDateString('en-US', {
+															year: 'numeric',
+															month: 'long',
+															day: 'numeric',
+														})}
+													</div>
+												</div>
+											</div>
+										</div>
+
+										{fb.review && (
+											<p className="line-clamp-4">{fb.review}</p>
+										)}
 									</div>
 								))
 							) : (
