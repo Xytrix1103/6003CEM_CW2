@@ -507,7 +507,7 @@ export default function MoviePage() {
 			{/* Main Content */}
 			<div className="container py-8">
 				<Tabs value={selectedTab} onValueChange={setSelectedTab}>
-					<TabsList className="grid w-full grid-cols-4 mb-8">
+					<TabsList className="grid w-full grid-cols-5 mb-8">
 						<TabsTrigger value="overview">Overview</TabsTrigger>
 						<TabsTrigger value="cast">Cast & Crew</TabsTrigger>
 						<TabsTrigger value="media">Media</TabsTrigger>
