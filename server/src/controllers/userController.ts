@@ -433,7 +433,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
 				path: 'watched',
 				select: 'movieId isFavorited feedback createdAt _id',
 			})
-			.select('-firebaseUid -__v -visits -email') // Exclude sensitive data
+			.select('-firebaseUid -__v -visits email') // Exclude sensitive data
 			.orFail();
 
 		if (!user) {
