@@ -46,18 +46,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
 				return await patch('/user/name', { displayName })
 					.then(async (data) => {
-						return await auth.updateCurrentUser({
-							...user,
-							displayName: displayName,
+						toast.success('Success', {
+							description: data.message || 'Display name updated successfully',
 						})
-							.then(() => {
-								toast.success('Success', {
-									description: data.message || 'Display name updated successfully',
-								})
-							})
-							.catch(error => {
-								return Promise.reject(error)
-							})
 					})
 					.catch(error => {
 						return Promise.reject(error)
